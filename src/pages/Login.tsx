@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n'
-import { isValidBurundiPhone, normalizePhone, phoneToAuthEmail, supabase } from '../lib/supabase'
+import { isValidPhone, normalizePhone, phoneToAuthEmail, supabase } from '../lib/supabase'
 import { BrandLogo, LangSwitch, ScreenShell } from '../components/ui'
 
 export default function Login() {
@@ -16,7 +16,7 @@ export default function Login() {
     e.preventDefault()
     setError('')
     const p = normalizePhone(phone)
-    if (!isValidBurundiPhone(p)) {
+    if (!isValidPhone(p)) {
       setError(locale === 'fr' ? 'Numéro invalide' : 'Invalid number')
       return
     }
@@ -49,7 +49,7 @@ export default function Login() {
           <input
             className="input mono"
             type="tel"
-            placeholder="+257 79 XX XX XX"
+            placeholder="+1 201 555 0123"
             required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
