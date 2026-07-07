@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n'
-import { isValidBurundiPhone, normalizePhone, phoneToAuthEmail, supabase } from '../lib/supabase'
+import { isValidPhone, normalizePhone, phoneToAuthEmail, supabase } from '../lib/supabase'
 import { BrandLogo, LangSwitch, ScreenShell } from '../components/ui'
 
 export default function Register() {
@@ -26,8 +26,8 @@ export default function Register() {
     e.preventDefault()
     setError('')
     const phone = normalizePhone(form.phone)
-    if (!isValidBurundiPhone(phone)) {
-      setError(locale === 'fr' ? 'Numéro invalide — format attendu : +257 79 XX XX XX' : 'Invalid number — expected format: +257 79 XX XX XX')
+    if (!isValidPhone(phone)) {
+      setError(locale === 'fr' ? 'Numéro invalide — format attendu : +XXX XXXXXXXXX (ex: +1 201 555 0123)' : 'Invalid number — expected format: +XXX XXXXXXXXX (e.g., +1 201 555 0123)')
       return
     }
     if (form.password.length < 6) {
@@ -89,7 +89,7 @@ export default function Register() {
           <input
             className="input mono"
             type="tel"
-            placeholder="+257 79 XX XX XX"
+            placeholder="+1 201 555 0123"
             required
             value={form.phone}
             onChange={set('phone')}

@@ -27,3 +27,9 @@ export function normalizePhone(raw: string): string {
 export function isValidBurundiPhone(p: string): boolean {
   return /^\+257\d{8}$/.test(normalizePhone(p))
 }
+
+export function isValidPhone(p: string): boolean {
+  // Accepte n'importe quel numéro international : +1..., +250..., +243..., +224..., etc.
+  const normalized = normalizePhone(p)
+  return /^\+\d{7,15}$/.test(normalized) // +code pays + 7-15 chiffres
+}
