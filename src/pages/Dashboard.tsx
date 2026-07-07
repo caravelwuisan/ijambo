@@ -119,7 +119,7 @@ export default function Dashboard() {
     streak >= 3 ? { emoji: '🔥', text: `${streak} ${locale === 'fr' ? 'jours' : 'days'}` } : null,
     completedLessons >= 5 ? { emoji: '⭐', text: locale === 'fr' ? '5 leçons' : '5 lessons' } : null,
     globalPct >= 50 ? { emoji: '🏆', text: locale === 'fr' ? 'Mi-parcours' : 'Halfway' } : null,
-  ].filter(Boolean)
+  ].filter(Boolean) as Array<{ emoji: string; text: string }>
 
   return (
     <ScreenShell>
