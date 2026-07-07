@@ -13,7 +13,7 @@ export const supabase = createClient(
 
 /** Le téléphone est l'identifiant principal : on dérive un email technique pour Supabase Auth. */
 export function phoneToAuthEmail(phone: string): string {
-  return `${normalizePhone(phone).replace('+', '')}@phone.ijambo.bi`
+  return `phone_${normalizePhone(phone).replace('+', '')}@ijambo.app`
 }
 
 export function normalizePhone(raw: string): string {
