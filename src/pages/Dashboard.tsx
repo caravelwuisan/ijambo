@@ -131,18 +131,18 @@ export default function Dashboard() {
 
       {/* HERO SECTION — À faire maintenant */}
       {firstIncomplete && (
-        <div className="mt-4 bg-gradient-to-br from-green to-green-soft border border-green rounded-2xl p-4 relative overflow-hidden">
+        <div className="mt-4 bg-green-soft border-2 border-green rounded-2xl p-4 relative overflow-hidden">
           <div className="absolute top-2 right-2 text-3xl opacity-20">✨</div>
-          <p className="text-[11px] font-bold text-green-ink opacity-80 mb-1">
+          <p className="text-[11px] font-bold text-green opacity-90 mb-1">
             {locale === 'fr' ? '⚡ À FAIRE MAINTENANT' : '⚡ DO THIS NOW'}
           </p>
-          <h2 className="text-[16px] font-extrabold text-green-ink mb-2">{firstIncomplete.title}</h2>
-          <p className="text-[12px] text-green-ink opacity-90 mb-3">
+          <h2 className="text-[16px] font-extrabold text-ink mb-2">{firstIncomplete.title}</h2>
+          <p className="text-[12px] text-muted mb-3">
             {locale === 'fr' ? '~' : '~'} {firstIncomplete.est_minutes} min
           </p>
           <Link
             to={`/lesson/${firstIncomplete.id}`}
-            className="inline-block bg-green-ink text-white px-5 py-2.5 rounded-lg font-bold text-[13px] no-underline"
+            className="inline-block bg-green text-white px-5 py-2.5 rounded-lg font-bold text-[13px] no-underline"
           >
             {locale === 'fr' ? 'Commencer →' : 'Start →'}
           </Link>
@@ -228,11 +228,11 @@ export default function Dashboard() {
       {/* QUICK ACTIONS */}
       <p className="text-[12px] font-bold text-muted mt-4">{locale === 'fr' ? 'ACTIONS RAPIDES' : 'QUICK ACTIONS'}</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <Link to="/exams" className="card !bg-gold-soft !border-gold no-underline text-center py-3">
+        <Link to="/exams" className="card bg-gold-soft border-2 border-gold no-underline text-center py-3 rounded-xl">
           <p className="text-2xl">📅</p>
-          <p className="text-[12px] font-bold text-gold-ink">{locale === 'fr' ? 'Test blanc' : 'Mock test'}</p>
+          <p className="text-[12px] font-bold text-gold">{locale === 'fr' ? 'Test blanc' : 'Mock test'}</p>
         </Link>
-        <Link to="/coaching" className="card !bg-red-soft !border-red no-underline text-center py-3">
+        <Link to="/coaching" className="card bg-red-soft border-2 border-red no-underline text-center py-3 rounded-xl">
           <p className="text-2xl">🗣️</p>
           <p className="text-[12px] font-bold text-red">{locale === 'fr' ? 'Coaching' : 'Coaching'}</p>
         </Link>
