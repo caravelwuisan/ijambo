@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [streak, setStreak] = useState(0)
   const [liveLinks, setLiveLinks] = useState<Record<string, string>>({})
   const [hasExamAccess, setHasExamAccess] = useState(false)
+  const [totalLessons, setTotalLessons] = useState(0)
+  const [completedLessons, setCompletedLessons] = useState(0)
 
   useEffect(() => {
     if (!session) return
@@ -52,9 +54,12 @@ export default function Dashboard() {
           supabase.from('lesson_progress').select('lesson_id, completed_at').eq('user_id', session.user.id),
         ])
         const doneSet = new Set((progress ?? []).filter((p: any) => p.completed_at).map((p: any) => p.lesson_id))
+        const lessonList = (lessons as Lesson[]) ?? []
+        setTotalLessons(lessonList.length)
+        setCompletedLessons(doneSet.size)
         setModules(
           moduleList.map((m) => {
-            const ls = ((lessons as Lesson[]) ?? []).filter((l) => l.module_id === m.id)
+            const ls = lessonList.filter((l) => l.module_id === m.id)
             return {
               ...m,
               total: ls.length,
@@ -105,6 +110,16 @@ export default function Dashboard() {
   const target = GOAL_TARGET[profile?.goal ?? 'other'] ?? '80+'
 
   const MODULE_ICONS: Record<string, string> = { Listening: '🎧', Reading: '📖', Writing: '✍️', Speaking: '🗣' }
+  const firstIncomplete = modules.flatMap(m => m.nextLesson ? m : []).length > 0
+    ? modules.find(m => m.nextLesson)?.nextLesson
+    : null
+
+  // Badges basés sur les accomplissements
+  const badges = [
+    streak >= 3 ? { emoji: '🔥', text: `${streak} ${locale === 'fr' ? 'jours' : 'days'}` } : null,
+    completedLessons >= 5 ? { emoji: '⭐', text: locale === 'fr' ? '5 leçons' : '5 lessons' } : null,
+    globalPct >= 50 ? { emoji: '🏆', text: locale === 'fr' ? 'Mi-parcours' : 'Halfway' } : null,
+  ].filter(Boolean)
 
   return (
     <ScreenShell>
@@ -114,82 +129,139 @@ export default function Dashboard() {
         streak={streak}
       />
 
-      {/* progression globale */}
-      <div className="card mt-4">
-        <div className="flex justify-between mb-1.5">
-          <p className="text-[12px] font-bold">
-            {t('dash.progress')} {target}
+      {/* HERO SECTION — À faire maintenant */}
+      {firstIncomplete && (
+        <div className="mt-4 bg-gradient-to-br from-green to-green-soft border border-green rounded-2xl p-4 relative overflow-hidden">
+          <div className="absolute top-2 right-2 text-3xl opacity-20">✨</div>
+          <p className="text-[11px] font-bold text-green-ink opacity-80 mb-1">
+            {locale === 'fr' ? '⚡ À FAIRE MAINTENANT' : '⚡ DO THIS NOW'}
           </p>
-          <span className="mono text-[12px] text-green">{globalPct}%</span>
+          <h2 className="text-[16px] font-extrabold text-green-ink mb-2">{firstIncomplete.title}</h2>
+          <p className="text-[12px] text-green-ink opacity-90 mb-3">
+            {locale === 'fr' ? '~' : '~'} {firstIncomplete.est_minutes} min
+          </p>
+          <Link
+            to={`/lesson/${firstIncomplete.id}`}
+            className="inline-block bg-green-ink text-white px-5 py-2.5 rounded-lg font-bold text-[13px] no-underline"
+          >
+            {locale === 'fr' ? 'Commencer →' : 'Start →'}
+          </Link>
+        </div>
+      )}
+
+      {/* STATS PERSONNELLES */}
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="card text-center">
+          <p className="text-2xl">📊</p>
+          <p className="text-[12px] font-bold text-green">{globalPct}%</p>
+          <p className="text-[10px] text-muted">{locale === 'fr' ? 'Complété' : 'Done'}</p>
+        </div>
+        <div className="card text-center">
+          <p className="text-2xl">📚</p>
+          <p className="text-[12px] font-bold text-green">{completedLessons}/{totalLessons}</p>
+          <p className="text-[10px] text-muted">{locale === 'fr' ? 'Leçons' : 'Lessons'}</p>
+        </div>
+        <div className="card text-center">
+          <p className="text-2xl">⏱️</p>
+          <p className="text-[12px] font-bold text-green">{startedWeeks}/{weeks}</p>
+          <p className="text-[10px] text-muted">{locale === 'fr' ? 'Semaines' : 'Weeks'}</p>
+        </div>
+      </div>
+
+      {/* BADGES & RÉCOMPENSES */}
+      {badges.length > 0 && (
+        <div className="mt-3 flex gap-2 flex-wrap">
+          {badges.map((badge, i) => (
+            <div key={i} className="pill green">
+              {badge.emoji} {badge.text}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* PROGRESSION GLOBALE */}
+      <div className="card mt-3">
+        <div className="flex justify-between mb-2">
+          <p className="text-[12px] font-bold">{locale === 'fr' ? 'Objectif' : 'Goal'} {target}</p>
+          <span className="mono text-[12px] text-green font-bold">{globalPct}%</span>
         </div>
         <div className="progress">
           <i style={{ width: `${globalPct}%` }} />
         </div>
       </div>
 
-      {/* 4 modules avec prochaine leçon */}
-      <div className="mt-3 flex flex-col gap-2">
+      {/* MODULES & LEÇONS */}
+      <p className="text-[12px] font-bold text-muted mt-4">{locale === 'fr' ? 'MON PARCOURS' : 'MY PROGRAM'}</p>
+      <div className="mt-2 flex flex-col gap-2">
         {modules.map((m) => {
           const pct = m.total ? Math.round((m.done / m.total) * 100) : 0
           return (
             <Link
               key={m.id}
               to={m.nextLesson ? `/lesson/${m.nextLesson.id}` : `/module/${m.id}`}
-              className="flex items-center gap-3 bg-card border border-line rounded-xl px-3 py-2.5 no-underline text-ink"
+              className="flex items-center gap-3 bg-card border border-line rounded-xl px-3 py-2.5 no-underline text-ink hover:border-green transition"
             >
-              <div className="w-9 h-9 rounded-[9px] bg-green-soft flex items-center justify-center text-lg">
+              <div className="w-10 h-10 rounded-lg bg-green-soft flex items-center justify-center text-lg flex-shrink-0">
                 {m.icon ?? MODULE_ICONS[m.name] ?? '📚'}
               </div>
               <div className="flex-1 min-w-0">
                 <b className="text-[13px] block">{m.name}</b>
                 <span className="text-[11px] text-muted truncate block">
                   {m.nextLesson
-                    ? `${locale === 'fr' ? 'Leçon' : 'Lesson'} ${m.done + 1} · ${m.nextLesson.title}`
+                    ? `${locale === 'fr' ? 'Leçon' : 'Lesson'} ${m.done + 1}/${m.total}`
                     : m.total
-                      ? '✓ ' + (locale === 'fr' ? 'Module terminé' : 'Module completed')
-                      : locale === 'fr' ? 'Bientôt disponible' : 'Coming soon'}
+                      ? '✓ ' + (locale === 'fr' ? 'Complété' : 'Done')
+                      : locale === 'fr' ? 'Bientôt' : 'Soon'}
                 </span>
               </div>
-              <span className="mono text-[12px] text-green">{pct}%</span>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="w-12 h-1.5 bg-line rounded-full overflow-hidden">
+                  <div style={{ width: `${pct}%` }} className="h-full bg-green transition" />
+                </div>
+                <span className="mono text-[11px] text-green font-bold w-6 text-right">{pct}%</span>
+              </div>
             </Link>
           )
         })}
       </div>
 
-      {/* prochain test blanc */}
-      <Link to="/exams" className="card mt-3 !bg-green-soft !border-green no-underline block">
-        <p className="text-[12.5px] leading-relaxed text-ink">
-          <b className="text-green">📅 {t('dash.nextmock')}</b> —{' '}
-          {locale === 'fr'
-            ? 'conditions réelles, résultat immédiat pour Reading et Listening.'
-            : 'real conditions, instant results for Reading and Listening.'}
-        </p>
-      </Link>
+      {/* QUICK ACTIONS */}
+      <p className="text-[12px] font-bold text-muted mt-4">{locale === 'fr' ? 'ACTIONS RAPIDES' : 'QUICK ACTIONS'}</p>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <Link to="/exams" className="card !bg-gold-soft !border-gold no-underline text-center py-3">
+          <p className="text-2xl">📅</p>
+          <p className="text-[12px] font-bold text-gold-ink">{locale === 'fr' ? 'Test blanc' : 'Mock test'}</p>
+        </Link>
+        <Link to="/coaching" className="card !bg-red-soft !border-red no-underline text-center py-3">
+          <p className="text-2xl">🗣️</p>
+          <p className="text-[12px] font-bold text-red">{locale === 'fr' ? 'Coaching' : 'Coaching'}</p>
+        </Link>
+      </div>
 
-      {/* sessions live + coaching */}
+      {/* SESSIONS LIVE */}
       {(liveLinks.speaking || liveLinks.writing) && (
-        <div className="card mt-3">
-          <p className="text-[12px] font-bold mb-2">🔴 {t('dash.live')}</p>
+        <div className="card mt-3 !border-gold">
+          <p className="text-[12px] font-bold mb-2">🔴 {locale === 'fr' ? 'EN DIRECT' : 'LIVE NOW'}</p>
           <div className="flex gap-2">
             {liveLinks.speaking && (
-              <a href={liveLinks.speaking} target="_blank" rel="noopener" className="btn green sm flex-1">Speaking</a>
+              <a href={liveLinks.speaking} target="_blank" rel="noopener" className="btn green sm flex-1">
+                {locale === 'fr' ? 'Speaking' : 'Speaking'}
+              </a>
             )}
             {liveLinks.writing && (
-              <a href={liveLinks.writing} target="_blank" rel="noopener" className="btn green sm flex-1">Writing</a>
+              <a href={liveLinks.writing} target="_blank" rel="noopener" className="btn green sm flex-1">
+                {locale === 'fr' ? 'Writing' : 'Writing'}
+              </a>
             )}
           </div>
         </div>
       )}
 
-      <Link to="/coaching" className="btn ghost mt-3">
-        {locale === 'fr' ? 'Coaching présentiel — Bujumbura' : 'In-person coaching — Bujumbura'}
-      </Link>
-
       <button
-        className="text-[12px] text-muted bg-transparent border-0 cursor-pointer mt-4 underline"
+        className="text-[11px] text-muted bg-transparent border-0 cursor-pointer mt-5 underline"
         onClick={() => supabase.auth.signOut().then(() => navigate('/'))}
       >
-        {t('auth.logout')}
+        {locale === 'fr' ? 'Déconnexion' : 'Logout'}
       </button>
     </ScreenShell>
   )
