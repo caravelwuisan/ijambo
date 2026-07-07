@@ -12,7 +12,7 @@ const GOAL_TARGET: Record<string, string> = { usa: '85+', china: '80+', regional
 
 const JACQUES_BIO = {
   fr: {
-    name: 'Jacques Niyonzima',
+    name: 'Jacques Bacamurwanco',
     title: 'Professeur d\'anglais',
     subtitle: 'Université du Burundi',
     bio: 'Ancien ambassadeur du Burundi aux États-Unis. Spécialiste en préparation aux examens internationaux.',
@@ -20,7 +20,7 @@ const JACQUES_BIO = {
     reviews: 47,
   },
   en: {
-    name: 'Jacques Niyonzima',
+    name: 'Jacques Bacamurwanco',
     title: 'English Professor',
     subtitle: 'University of Burundi',
     bio: 'Former Ambassador of Burundi to the United States. International exam specialist.',
