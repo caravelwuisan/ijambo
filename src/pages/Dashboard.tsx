@@ -255,48 +255,44 @@ export default function Dashboard() {
       <div className="mt-6 mb-2">
         <p className="text-[12px] font-bold text-muted">{locale === 'fr' ? 'COACHING PERSONNEL' : 'COACHING'}</p>
       </div>
-      <div className="card !p-0 !border-2 overflow-hidden bg-gradient-to-br from-red/5 to-gold/5 border-red/20">
-        {/* En-tête avec gradent */}
-        <div className="bg-gradient-to-r from-red to-red-soft h-20 relative overflow-hidden">
-          <div className="absolute top-2 right-2 opacity-20 text-3xl">🌟</div>
+      <div className="card !p-0 !border-2 overflow-hidden bg-card border-red/20">
+        {/* En-tête avec gradient — réduit */}
+        <div className="bg-gradient-to-r from-red to-red-soft h-12 relative overflow-hidden">
+          <div className="absolute top-1 right-2 opacity-15 text-2xl">✨</div>
         </div>
 
         {/* Contenu avec avatar chevauchant */}
-        <div className="px-4 pb-4">
-          <div className="flex gap-3 -mt-8 mb-3">
+        <div className="px-4 pb-4 pt-3">
+          <div className="flex gap-3 -mt-10 mb-3">
             {/* Avatar */}
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold to-red flex items-center justify-center text-2xl border-4 border-paper flex-shrink-0 shadow-sm">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gold to-red flex items-center justify-center text-xl border-4 border-card flex-shrink-0 shadow-md">
               👨‍🏫
             </div>
 
             {/* Infos basiques */}
-            <div className="flex-1 pt-1">
-              <h3 className="text-[14px] font-extrabold text-ink">{JACQUES_BIO[locale].name}</h3>
-              <p className="text-[12px] text-muted font-semibold">{JACQUES_BIO[locale].title}</p>
-              <p className="text-[11px] text-muted">{JACQUES_BIO[locale].subtitle}</p>
+            <div className="flex-1 pt-2">
+              <h3 className="text-[13px] font-extrabold text-ink leading-tight">{JACQUES_BIO[locale].name}</h3>
+              <p className="text-[11px] text-muted font-semibold">{JACQUES_BIO[locale].title}</p>
+              <p className="text-[10px] text-muted">{JACQUES_BIO[locale].subtitle}</p>
             </div>
           </div>
 
-          {/* Badge ambassadeur */}
-          <div className="mb-3 inline-block">
-            <div className="pill gold text-[11px]">
-              🏛️ {locale === 'fr' ? 'Ancien ambassadeur' : 'Former Ambassador'}
+          {/* Badge ambassadeur + Rating sur une ligne */}
+          <div className="flex items-center gap-2 mb-2">
+            <div className="pill gold text-[10px]">
+              🏛️ {locale === 'fr' ? 'Ambassadeur' : 'Ambassador'}
             </div>
-          </div>
-
-          {/* Rating */}
-          <div className="flex items-center gap-1 mb-3">
-            <span className="text-[12px] font-bold text-gold">⭐ {JACQUES_BIO[locale].rating}</span>
-            <span className="text-[11px] text-muted">({JACQUES_BIO[locale].reviews} {locale === 'fr' ? 'avis' : 'reviews'})</span>
+            <span className="text-[11px] font-bold text-gold">⭐ {JACQUES_BIO[locale].rating}</span>
+            <span className="text-[10px] text-muted">({JACQUES_BIO[locale].reviews})</span>
           </div>
 
           {/* Bio */}
-          <p className="text-[12px] text-muted leading-relaxed mb-4">
+          <p className="text-[11.5px] text-muted leading-relaxed mb-3">
             {JACQUES_BIO[locale].bio}
           </p>
 
           {/* CTA */}
-          <Link to="/coaching" className="block w-full bg-red text-white text-center py-3 rounded-lg font-bold text-[13px] no-underline hover:bg-red/90 transition">
+          <Link to="/coaching" className="block w-full bg-red text-white text-center py-2.5 rounded-lg font-bold text-[12px] no-underline hover:bg-red/90 transition">
             {locale === 'fr' ? 'Réserver une session →' : 'Book a session →'}
           </Link>
         </div>
