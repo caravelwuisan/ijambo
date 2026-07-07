@@ -102,7 +102,7 @@ export default function ExamRunner() {
     if (isWriting || isSpeaking) {
       // envoi en file de correction pour le coach (§5.8)
       let audioPath: string | null = null
-      if (isSpeaking && audioBlob && session) {
+      if (isSpeaking && audioBlob && session?.user?.id) {
         audioPath = `${session.user.id}/${attempt.id}-speaking.webm`
         await supabase.storage.from('submissions').upload(audioPath, audioBlob, { upsert: true })
       }
@@ -136,8 +136,10 @@ export default function ExamRunner() {
   }, [attempt, exam, section, sectionIdx, sectionScores, questions, answers, essay, audioBlob, isWriting, isSpeaking, session])
 
   useEffect(() => {
-    if (phase === 'section' && remaining === 0 && endsAt > 0) finishSection()
-  }, [phase, remaining, endsAt, finishSection])
+    if (phase === 'section' && remaining === 0 && endsAt > 0 && !advancing.current) {
+      finishSection()
+    }
+  }, [phase, remaining, endsAt])
 
   async function nextSection() {
     if (!attempt) return
