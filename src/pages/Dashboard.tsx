@@ -10,6 +10,25 @@ type ModuleView = Module & { total: number; done: number; nextLesson: Lesson | n
 
 const GOAL_TARGET: Record<string, string> = { usa: '85+', china: '80+', regional: '70+', other: '80+' }
 
+const JACQUES_BIO = {
+  fr: {
+    name: 'Jacques Niyonzima',
+    title: 'Professeur d\'anglais',
+    subtitle: 'Université du Burundi',
+    bio: 'Ancien ambassadeur du Burundi aux États-Unis. Spécialiste en préparation aux examens internationaux.',
+    rating: 4.9,
+    reviews: 47,
+  },
+  en: {
+    name: 'Jacques Niyonzima',
+    title: 'English Professor',
+    subtitle: 'University of Burundi',
+    bio: 'Former Ambassador of Burundi to the United States. International exam specialist.',
+    rating: 4.9,
+    reviews: 47,
+  },
+}
+
 export default function Dashboard() {
   const { t, locale } = useI18n()
   const { session, profile } = useAuth()
@@ -131,18 +150,18 @@ export default function Dashboard() {
 
       {/* HERO SECTION — À faire maintenant */}
       {firstIncomplete && (
-        <div className="mt-4 bg-green-soft border-2 border-green rounded-2xl p-4 relative overflow-hidden">
-          <div className="absolute top-2 right-2 text-3xl opacity-20">✨</div>
-          <p className="text-[11px] font-bold text-green opacity-90 mb-1">
-            {locale === 'fr' ? '⚡ À FAIRE MAINTENANT' : '⚡ DO THIS NOW'}
+        <div className="mt-5 bg-gradient-to-br from-green to-green/80 border-2 border-green rounded-2xl p-5 relative overflow-hidden shadow-md">
+          <div className="absolute top-0 right-0 text-5xl opacity-10 pointer-events-none">✨</div>
+          <p className="text-[10px] font-extrabold text-green/90 mb-1 tracking-wide opacity-80">
+            ⚡ {locale === 'fr' ? 'À FAIRE MAINTENANT' : 'DO THIS NOW'}
           </p>
-          <h2 className="text-[16px] font-extrabold text-ink mb-2">{firstIncomplete.title}</h2>
-          <p className="text-[12px] text-muted mb-3">
-            {locale === 'fr' ? '~' : '~'} {firstIncomplete.est_minutes} min
+          <h2 className="text-[17px] font-extrabold text-white mb-2 leading-tight">{firstIncomplete.title}</h2>
+          <p className="text-[12px] text-white/80 mb-4">
+            ⏱ {firstIncomplete.est_minutes} min
           </p>
           <Link
             to={`/lesson/${firstIncomplete.id}`}
-            className="inline-block bg-green text-white px-5 py-2.5 rounded-lg font-bold text-[13px] no-underline"
+            className="inline-block bg-white text-green px-5 py-2.5 rounded-lg font-extrabold text-[13px] no-underline hover:bg-white/95 transition shadow-sm"
           >
             {locale === 'fr' ? 'Commencer →' : 'Start →'}
           </Link>
@@ -150,20 +169,20 @@ export default function Dashboard() {
       )}
 
       {/* STATS PERSONNELLES */}
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <div className="card text-center">
-          <p className="text-2xl">📊</p>
-          <p className="text-[12px] font-bold text-green">{globalPct}%</p>
+      <div className="mt-4 grid grid-cols-3 gap-3">
+        <div className="card !p-4 bg-gradient-to-br from-green/10 to-green/5 border border-green/20 text-center rounded-xl">
+          <p className="text-3xl mb-2">📊</p>
+          <p className="text-[13px] font-extrabold text-green">{globalPct}%</p>
           <p className="text-[10px] text-muted">{locale === 'fr' ? 'Complété' : 'Done'}</p>
         </div>
-        <div className="card text-center">
-          <p className="text-2xl">📚</p>
-          <p className="text-[12px] font-bold text-green">{completedLessons}/{totalLessons}</p>
+        <div className="card !p-4 bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/20 text-center rounded-xl">
+          <p className="text-3xl mb-2">📚</p>
+          <p className="text-[13px] font-extrabold text-gold">{completedLessons}/{totalLessons}</p>
           <p className="text-[10px] text-muted">{locale === 'fr' ? 'Leçons' : 'Lessons'}</p>
         </div>
-        <div className="card text-center">
-          <p className="text-2xl">⏱️</p>
-          <p className="text-[12px] font-bold text-green">{startedWeeks}/{weeks}</p>
+        <div className="card !p-4 bg-gradient-to-br from-red/10 to-red/5 border border-red/20 text-center rounded-xl">
+          <p className="text-3xl mb-2">⏱️</p>
+          <p className="text-[13px] font-extrabold text-red">{startedWeeks}/{weeks}</p>
           <p className="text-[10px] text-muted">{locale === 'fr' ? 'Semaines' : 'Weeks'}</p>
         </div>
       </div>
@@ -191,17 +210,24 @@ export default function Dashboard() {
       </div>
 
       {/* MODULES & LEÇONS */}
-      <p className="text-[12px] font-bold text-muted mt-4">{locale === 'fr' ? 'MON PARCOURS' : 'MY PROGRAM'}</p>
-      <div className="mt-2 flex flex-col gap-2">
+      <p className="text-[12px] font-bold text-muted mt-5">{locale === 'fr' ? 'MON PARCOURS' : 'MY PROGRAM'}</p>
+      <div className="mt-2 flex flex-col gap-2.5">
         {modules.map((m) => {
           const pct = m.total ? Math.round((m.done / m.total) * 100) : 0
+          const isComplete = m.done === m.total && m.total > 0
           return (
             <Link
               key={m.id}
               to={m.nextLesson ? `/lesson/${m.nextLesson.id}` : `/module/${m.id}`}
-              className="flex items-center gap-3 bg-card border border-line rounded-xl px-3 py-2.5 no-underline text-ink hover:border-green transition"
+              className={`flex items-center gap-3 border-2 rounded-xl px-4 py-3 no-underline text-ink transition ${
+                isComplete
+                  ? 'bg-green/5 border-green/30 hover:border-green/60'
+                  : 'bg-card border-line hover:border-green/50 hover:bg-white'
+              }`}
             >
-              <div className="w-10 h-10 rounded-lg bg-green-soft flex items-center justify-center text-lg flex-shrink-0">
+              <div className={`w-11 h-11 rounded-lg flex items-center justify-center text-lg flex-shrink-0 ${
+                isComplete ? 'bg-green/20' : 'bg-green-soft'
+              }`}>
                 {m.icon ?? MODULE_ICONS[m.name] ?? '📚'}
               </div>
               <div className="flex-1 min-w-0">
@@ -215,26 +241,85 @@ export default function Dashboard() {
                 </span>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                <div className="w-12 h-1.5 bg-line rounded-full overflow-hidden">
+                <div className="w-14 h-2 bg-line rounded-full overflow-hidden">
                   <div style={{ width: `${pct}%` }} className="h-full bg-green transition" />
                 </div>
-                <span className="mono text-[11px] text-green font-bold w-6 text-right">{pct}%</span>
+                <span className="mono text-[11px] text-green font-bold w-7 text-right">{pct}%</span>
               </div>
             </Link>
           )
         })}
       </div>
 
+      {/* COACHING SECTION — JACQUES PREMIUM */}
+      <div className="mt-6 mb-2">
+        <p className="text-[12px] font-bold text-muted">{locale === 'fr' ? 'COACHING PERSONNEL' : 'COACHING'}</p>
+      </div>
+      <div className="card !p-0 !border-2 overflow-hidden bg-gradient-to-br from-red/5 to-gold/5 border-red/20">
+        {/* En-tête avec gradent */}
+        <div className="bg-gradient-to-r from-red to-red-soft h-20 relative overflow-hidden">
+          <div className="absolute top-2 right-2 opacity-20 text-3xl">🌟</div>
+        </div>
+
+        {/* Contenu avec avatar chevauchant */}
+        <div className="px-4 pb-4">
+          <div className="flex gap-3 -mt-8 mb-3">
+            {/* Avatar */}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold to-red flex items-center justify-center text-2xl border-4 border-paper flex-shrink-0 shadow-sm">
+              👨‍🏫
+            </div>
+
+            {/* Infos basiques */}
+            <div className="flex-1 pt-1">
+              <h3 className="text-[14px] font-extrabold text-ink">{JACQUES_BIO[locale].name}</h3>
+              <p className="text-[12px] text-muted font-semibold">{JACQUES_BIO[locale].title}</p>
+              <p className="text-[11px] text-muted">{JACQUES_BIO[locale].subtitle}</p>
+            </div>
+          </div>
+
+          {/* Badge ambassadeur */}
+          <div className="mb-3 inline-block">
+            <div className="pill gold text-[11px]">
+              🏛️ {locale === 'fr' ? 'Ancien ambassadeur' : 'Former Ambassador'}
+            </div>
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1 mb-3">
+            <span className="text-[12px] font-bold text-gold">⭐ {JACQUES_BIO[locale].rating}</span>
+            <span className="text-[11px] text-muted">({JACQUES_BIO[locale].reviews} {locale === 'fr' ? 'avis' : 'reviews'})</span>
+          </div>
+
+          {/* Bio */}
+          <p className="text-[12px] text-muted leading-relaxed mb-4">
+            {JACQUES_BIO[locale].bio}
+          </p>
+
+          {/* CTA */}
+          <Link to="/coaching" className="block w-full bg-red text-white text-center py-3 rounded-lg font-bold text-[13px] no-underline hover:bg-red/90 transition">
+            {locale === 'fr' ? 'Réserver une session →' : 'Book a session →'}
+          </Link>
+        </div>
+      </div>
+
       {/* QUICK ACTIONS */}
-      <p className="text-[12px] font-bold text-muted mt-4">{locale === 'fr' ? 'ACTIONS RAPIDES' : 'QUICK ACTIONS'}</p>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <Link to="/exams" className="card bg-gold-soft border-2 border-gold no-underline text-center py-3 rounded-xl">
-          <p className="text-2xl">📅</p>
+      <p className="text-[12px] font-bold text-muted mt-6">{locale === 'fr' ? 'PRATIQUER' : 'PRACTICE'}</p>
+      <div className="mt-2 grid grid-cols-2 gap-3">
+        <Link
+          to="/exams"
+          className="card !p-4 bg-gradient-to-br from-gold/10 to-gold/5 border-2 border-gold no-underline rounded-xl hover:border-gold/80 transition"
+        >
+          <p className="text-3xl mb-2">📋</p>
           <p className="text-[12px] font-bold text-gold">{locale === 'fr' ? 'Test blanc' : 'Mock test'}</p>
+          <p className="text-[10px] text-muted mt-1">{locale === 'fr' ? '45 min' : '45 min'}</p>
         </Link>
-        <Link to="/coaching" className="card bg-red-soft border-2 border-red no-underline text-center py-3 rounded-xl">
-          <p className="text-2xl">🗣️</p>
-          <p className="text-[12px] font-bold text-red">{locale === 'fr' ? 'Coaching' : 'Coaching'}</p>
+        <Link
+          to="/exams"
+          className="card !p-4 bg-gradient-to-br from-green/10 to-green/5 border-2 border-green no-underline rounded-xl hover:border-green/80 transition"
+        >
+          <p className="text-3xl mb-2">🎯</p>
+          <p className="text-[12px] font-bold text-green">{locale === 'fr' ? 'Quiz' : 'Quiz'}</p>
+          <p className="text-[10px] text-muted mt-1">{locale === 'fr' ? 'Rapide' : 'Quick'}</p>
         </Link>
       </div>
 
