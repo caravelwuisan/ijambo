@@ -59,11 +59,18 @@ export default function ExamRunner() {
       const s = exam!.sections[i]
       let qs: Question[] = []
       if (s.question_ids?.length) {
-        const { data } = await supabase.from('questions').select('*, passage:passages(*)').in('id', s.question_ids)
+        const { data, error } = await supabase
+          .from('questions')
+          .select('*, passage:passages(*)')
+          .in('id', s.question_ids)
+        if (error) console.error('Load error:', error)
         qs = (data as unknown as Question[]) ?? []
       } else {
-        for (const r of s.rules ?? []) qs.push(...(await resolveRule(r, `${att.id}-${i}`)))
+        for (const r of s.rules ?? []) {
+          qs.push(...(await resolveRule(r, `${att.id}-${i}`)))
+        }
       }
+      console.log(`Loaded ${qs.length} questions for section ${i}`)
       setQuestions(qs)
       setQIdx(0)
       setEssay('')
